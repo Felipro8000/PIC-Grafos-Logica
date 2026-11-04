@@ -91,6 +91,7 @@ for _ in range(50000):
     
     registros.append({
         'tramo_id': tramo['tramo_id'],
+        'length': tramo['length'],
         'hora_dia': hora,
         'dia_semana': dia,
         'clima': clima,
@@ -101,4 +102,4 @@ for _ in range(50000):
 
 df_historico = pd.DataFrame(registros)
 df_historico.to_csv("dataset_viajes_ultima_milla.csv", index=False)
-print("¡Dataset guardado con éxito como 'dataset_viajes_ultima_milla.csv' dentro de la carpeta del proyecto!")
+print("¡Dataset actualizado con éxito e incluída la longitud de los tramos!")
