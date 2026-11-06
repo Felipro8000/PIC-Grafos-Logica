@@ -36,3 +36,7 @@ print("\n--- NUEVOS RESULTADOS DEL MODELO ---")
 print(f" - MAE (Error Absoluto Medio): {mae:.2f} segundos")
 print(f" - RMSE (Raíz del Error Cuadrático Medio): {rmse:.2f} segundos")
 print(f" - R² (Coeficiente de Determinación): {r2:.4f}")
+
+import joblib
+joblib.dump(model, "modelo_ultima_milla.pkl")
+print("¡Modelo guardado exitosamente como 'modelo_ultima_milla.pkl'!")
