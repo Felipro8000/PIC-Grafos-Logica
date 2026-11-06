@@ -21,7 +21,7 @@ G = ox.graph_from_place("Rosario, Santa Fe, Argentina", network_type="drive")
 # Origen: Mi casovich -> Lon: -60.664205, -32.969943
 # Destino: Mi 2da casovich <3 -> Lon: -60.6700, Lat: -32.9250
 orig_lon, orig_lat = -60.664205, -32.969943
-dest_lon, dest_lat = -60.630714, -32.998269
+dest_lon, dest_lat = -60.663190, -33.011253
 
 orig_node = ox.distance.nearest_nodes(G, X=orig_lon, Y=orig_lat)
 dest_node = ox.distance.nearest_nodes(G, X=dest_lon, Y=dest_lat)
@@ -63,7 +63,7 @@ for idx, (u, v, k) in enumerate(edges_keys):
 
 # 4. Calcular la ruta óptima usando A*
 print("Calculando la ruta óptima de última milla usando el algoritmo A*...")
-ruta = nx.astar_path(G, source=orig_node, target=dest_node, weight='weight')
+ruta = nx.dijkstra_path(G, source=orig_node, target=dest_node, weight='weight')
 
 tiempo_total_segundos = sum(G[ruta[i]][ruta[i+1]][0]['weight'] for i in range(len(ruta)-1))
 print(f"\n¡Ruta óptima calculada con éxito!")
