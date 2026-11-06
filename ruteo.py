@@ -13,15 +13,15 @@ ox.settings.timeout = 900
 ox.settings.overpass_url = "https://overpass.kumi.systems/api"
 point = (-32.9468, -60.6393)
 
-print("Cargando la red vial de Rosario...")
-G = ox.graph_from_point(point, dist=5000, network_type="drive")
+print("Cargando la red vial completa de Rosario para el ruteo...")
+G = ox.graph_from_place("Rosario, Santa Fe, Argentina", network_type="drive")
 
 # Definir puntos de Origen y Destino en Rosario 
 # OJO: Longitud (X) va primero, Latitud (Y) va después
 # Origen: Mi casovich -> Lon: -60.664205, -32.969943
 # Destino: Mi 2da casovich <3 -> Lon: -60.6700, Lat: -32.9250
 orig_lon, orig_lat = -60.664205, -32.969943
-dest_lon, dest_lat = -60.621803, -32.989845
+dest_lon, dest_lat = -60.630714, -32.998269
 
 orig_node = ox.distance.nearest_nodes(G, X=orig_lon, Y=orig_lat)
 dest_node = ox.distance.nearest_nodes(G, X=dest_lon, Y=dest_lat)

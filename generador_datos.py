@@ -12,9 +12,8 @@ ox.settings.timeout = 900
 ox.settings.overpass_url = "https://overpass.kumi.systems/api"
 ox.settings.overpass_rate_limit = False
 
-point = (-32.9468, -60.6393)
 print("Descargando la red vial amplia de Rosario...")
-G = ox.graph_from_point(point, dist=5000, network_type="drive")
+G = ox.graph_from_place("Rosario, Santa Fe, Argentina", network_type="drive")
 G = ox.project_graph(G)
 print(f"¡Mapa descargado! Nodos: {G.number_of_nodes()}, Aristas: {G.number_of_edges()}")
 
