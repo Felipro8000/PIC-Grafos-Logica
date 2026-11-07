@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MapViewer } from './components/MapViewer';
 import { ControlPanel } from './components/ControlPanel';
 import { MetricsOverlay } from './components/MetricsOverlay';
+import { DeliveryTourPanel } from './components/DeliveryTourPanel';
+import { TourMetricsOverlay } from './components/TourMetricsOverlay';
 import { api } from './services/api';
 import {
   HealthResponse,
@@ -10,6 +12,7 @@ import {
   DeliveryWaypoint,
   ContextParams,
   RouteResponse,
+  DeliveryTourResponse,
 } from './types';
 import {
   Truck,
@@ -33,7 +36,7 @@ export const App: React.FC = () => {
     es_feriado: false,
   });
 
-  // Coordenadas seleccionadas para el MVP base
+  // Coordenadas seleccionadas para el modo Punto a Punto
   const [origin, setOrigin] = useState<Coordinate | null>({
     lat: -32.9477,
     lon: -60.6304,
@@ -42,12 +45,45 @@ export const App: React.FC = () => {
     lat: -32.9389,
     lon: -60.6698,
   }); // Terminal de Ómnibus
-  const [stops, setStops] = useState<DeliveryWaypoint[]>([]);
 
-  // Estado del cálculo de ruta
+  // Estado del cálculo de ruta Punto a Punto
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
   const [routeError, setRouteError] = useState<string | null>(null);
+
+  // Estado del modo Ronda de Entregas (TSP)
+  const [depot, setDepot] = useState<DeliveryWaypoint>({
+    id: 'centro_distribucion',
+    nombre: 'Centro de Distribución (Depósito Norte)',
+    lat: -32.9250,
+    lon: -60.6700,
+  });
+  const [stops, setStops] = useState<DeliveryWaypoint[]>([
+    {
+      id: 'pichincha',
+      nombre: 'Pichincha (Oroño y Güemes)',
+      lat: -32.9348,
+      lon: -60.6534,
+      orden: 1,
+    },
+    {
+      id: 'pellegrini',
+      nombre: 'Av. Pellegrini y Corrientes',
+      lat: -32.9555,
+      lon: -60.6508,
+      orden: 2,
+    },
+    {
+      id: 'monumento',
+      nombre: 'Monumento a la Bandera',
+      lat: -32.9477,
+      lon: -60.6304,
+      orden: 3,
+    },
+  ]);
+  const [returnToDepot, setReturnToDepot] = useState(true);
+  const [loadingTour, setLoadingTour] = useState(false);
+  const [tourResult, setTourResult] = useState<DeliveryTourResponse | null>(null);
 
   // Comprobar estado del backend al montar el componente
   const checkBackendHealth = async () => {
@@ -96,12 +132,13 @@ export const App: React.FC = () => {
       // Modo ronda: agregar parada
       const newStop: DeliveryWaypoint = {
         id: `stop-${Date.now()}`,
-        nombre: `Punto #${stops.length + 1}`,
+        nombre: `Cliente en (${coord.lat.toFixed(3)}, ${coord.lon.toFixed(3)})`,
         lat: coord.lat,
         lon: coord.lon,
         orden: stops.length + 1,
       };
       setStops([...stops, newStop]);
+      setTourResult(null);
     }
   };
 
@@ -136,6 +173,26 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleCalculateTour = async () => {
+    if (stops.length === 0) return;
+    setLoadingTour(true);
+    setRouteError(null);
+    try {
+      const result = await api.calculateDeliveryTour(
+        depot,
+        stops,
+        context,
+        returnToDepot
+      );
+      setTourResult(result);
+    } catch (err: any) {
+      setRouteError(err.message || 'Error al calcular la ronda de entregas');
+      setTourResult(null);
+    } finally {
+      setLoadingTour(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen w-screen bg-slate-950 font-sans select-none overflow-hidden">
       {/* 1. Header Superior */}
@@ -163,6 +220,7 @@ export const App: React.FC = () => {
             onClick={() => {
               setMode('route');
               setRouteResult(null);
+              setTourResult(null);
             }}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               mode === 'route'
@@ -177,6 +235,7 @@ export const App: React.FC = () => {
             onClick={() => {
               setMode('tour');
               setRouteResult(null);
+              setTourResult(null);
             }}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               mode === 'tour'
@@ -224,14 +283,15 @@ export const App: React.FC = () => {
         <MapViewer
           origin={origin}
           destination={destination}
-          stops={stops}
+          stops={tourResult ? tourResult.ordered_stops : [depot, ...stops]}
           staticCoords={routeResult?.static_route.coordinates}
           dynamicCoords={routeResult?.dynamic_route.coordinates}
+          tourCoords={tourResult?.coordinates_full}
           onMapClick={handleMapClick}
           mode={mode}
         />
 
-        {/* Panel Izquierdo: Controles de Contexto y Puntos */}
+        {/* Panel Izquierdo: Modo Punto a Punto */}
         {mode === 'route' && (
           <div className="absolute top-4 left-4 z-20">
             <ControlPanel
@@ -248,12 +308,52 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Panel Derecho: Métricas y Comparativa cuando se calcula una ruta */}
+        {/* Panel Izquierdo: Modo Ronda de Entregas (TSP) */}
+        {mode === 'tour' && (
+          <div className="absolute top-4 left-4 z-20">
+            <DeliveryTourPanel
+              depot={depot}
+              stops={stops}
+              presets={presets}
+              context={context}
+              returnToDepot={returnToDepot}
+              loading={loadingTour}
+              onSelectDepot={setDepot}
+              onAddStop={(newStop) => {
+                setStops([...stops, newStop]);
+                setTourResult(null);
+              }}
+              onRemoveStop={(id) => {
+                setStops(stops.filter((s) => s.id !== id));
+                setTourResult(null);
+              }}
+              onClearStops={() => {
+                setStops([]);
+                setTourResult(null);
+              }}
+              onToggleReturnToDepot={setReturnToDepot}
+              onContextChange={setContext}
+              onCalculateTour={handleCalculateTour}
+            />
+          </div>
+        )}
+
+        {/* Panel Derecho: Métricas de Punto a Punto */}
         {mode === 'route' && routeResult && (
           <div className="absolute top-4 right-4 z-20">
             <MetricsOverlay
               routeData={routeResult}
               onClose={() => setRouteResult(null)}
+            />
+          </div>
+        )}
+
+        {/* Panel Derecho: Métricas de Ronda TSP */}
+        {mode === 'tour' && tourResult && (
+          <div className="absolute top-4 right-4 z-20">
+            <TourMetricsOverlay
+              tourData={tourResult}
+              onClose={() => setTourResult(null)}
             />
           </div>
         )}

@@ -141,8 +141,8 @@ Simulador de Última Milla (Página Principal)
 - **Fase 2:** Preparación del Grafo y API Backend (Completada y testeada).
 - **Fase 3:** Estructura del Frontend (Setup de React + Vite + TypeScript + Tailwind + Mapa Leaflet centrado en Rosario) (Completada y testeada).
 - **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas) (Completada y testeada).
-- **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend) (Próxima etapa).
-- **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end.
+- **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend) (Completada y testeada).
+- **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end (Próxima etapa).
 
 ---
 
@@ -249,3 +249,26 @@ La suite de pruebas automatizadas validó con éxito el 100% de los componentes:
 - Renderizado simultáneo en Leaflet de ambas rutas con encuadre automático (`fitBounds`).
 - Manejo de excepciones y banners de alerta en caso de desconexión o puntos no transitables.
 - Validación con `npm run build` aprobada con 0 errores TypeScript.
+
+---
+
+## 13. Implementación y Resultados de la Fase 5 (Ronda de Entregas Multi-Parada TSP)
+
+### 1. Panel de Gestión del Circuito de Reparto (`src/components/DeliveryTourPanel.tsx`)
+- **Configuración de Depósito Central:** Selector para fijar la base o almacén logístico de salida y llegada del vehículo (ej. Centro de Distribución Norte o cualquier punto de Rosario).
+- **Gestión Dinámica de Paradas:**
+  - Agregar clientes haciendo clic directo en cualquier calle o intersección sobre el mapa cartográfico.
+  - Menú desplegable para incorporar rápidamente lugares emblemáticos de Rosario a la lista de entrega.
+  - Visualización del conteo de paradas agregadas con opción de eliminación individual o reinicio total.
+- **Configuración de Recorrido:** Toggle para decidir si el repartidor debe retornar al depósito inicial al finalizar la última entrega (circuito cerrado) o terminar en el último cliente.
+- **Condiciones de Tráfico y Clima:** Controles integrados de hora de salida, día y clima para calcular las matrices de tiempo con los pesos dinámicos del modelo de Machine Learning.
+
+### 2. Panel de Resultados y Desglose del Tour (`src/components/TourMetricsOverlay.tsx`)
+- **Totales Acumulados:** Tiempo total estimado en minutos del circuito completo y kilometraje total recorrido.
+- **Secuencia de Visitas Optimizada:** Listado paso a paso con los pines numerados en el orden óptimo calculado por la heurística de Vecino Más Cercano (*Nearest Neighbor*).
+- **Desglose Tramo por Tramo:** Distancia y tiempo estimado para cada una de las piernas de viaje individuales (de parada $i$ a parada $i+1$).
+
+### 3. Visualización Cartográfica (`MapViewer.tsx`)
+- **Pines Numerados:** Marcadores circulares con insignia púrpura numerada del 1 en adelante indicando el orden secuencial de parada. Marcador dorado con estrella para el depósito central.
+- **Polilínea Continua:** Trazado del circuito completo en color púrpura conectando todos los puntos a través de la red vial real de Rosario con encuadre automático (`fitBounds`).
+- **Validación del Build:** Compilación con TypeScript y Vite aprobada con 0 errores (`✓ built in 7.97s`).
