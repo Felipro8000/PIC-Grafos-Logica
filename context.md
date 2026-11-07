@@ -142,7 +142,7 @@ Simulador de Última Milla (Página Principal)
 - **Fase 3:** Estructura del Frontend (Setup de React + Vite + TypeScript + Tailwind + Mapa Leaflet centrado en Rosario) (Completada y testeada).
 - **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas) (Completada y testeada).
 - **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend) (Completada y testeada).
-- **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end (Próxima etapa).
+- **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end (Completada y testeada).
 
 ---
 
@@ -272,3 +272,32 @@ La suite de pruebas automatizadas validó con éxito el 100% de los componentes:
 - **Pines Numerados:** Marcadores circulares con insignia púrpura numerada del 1 en adelante indicando el orden secuencial de parada. Marcador dorado con estrella para el depósito central.
 - **Polilínea Continua:** Trazado del circuito completo en color púrpura conectando todos los puntos a través de la red vial real de Rosario con encuadre automático (`fitBounds`).
 - **Validación del Build:** Compilación con TypeScript y Vite aprobada con 0 errores (`✓ built in 7.97s`).
+
+---
+
+## 14. Implementación y Resultados de la Fase 6 (Auditoría del Modelo, Reporte de IA y README)
+
+### 1. Modal Interactivo de Auditoría y Uso de IA (`src/components/ModelInfoModal.tsx`)
+- **Pestaña de Métricas Estadísticas de Machine Learning:**
+  - Consulta en vivo a `GET /api/model/metrics`.
+  - Despliegue de métricas clave validadas sobre 10.000 muestras de test:
+    - **$R^2$:** `0.9078` (excelente ajuste predictivo).
+    - **MAE:** `2.87` segundos de desvío promedio por tramo.
+    - **RMSE:** `7.50` segundos.
+  - Gráfico porcentual de **Importancia de Variables (Feature Importances)** mostrando el peso relativo de la longitud del tramo, la hora pico, el clima y los feriados.
+  - Explicación de la conexión matemática entre la regresión y el atributo de costo dinámico de NetworkX.
+- **Pestaña de Documentación de Inteligencia Artificial (Criterio de Evaluación del TP):**
+  - Declaración formal de herramientas empleadas (Antigravity, Gemini, Claude, OSMnx).
+  - Alcance delimitado: tareas asistidas (generación de datos sintéticos, maquetación CSS/Tailwind, llamadas asíncronas) vs. decisiones humanas (modelado del grafo, formulación matemática, heurística TSP, diseño de pruebas y corrección de reglas de negocio).
+  - Ejemplos concretos de prompts que resultaron útiles.
+  - Errores de la IA detectados por el grupo y cómo se resolvieron (caída de mirrors de Overpass, indexación del depósito como base y no parada contable).
+  - Reflexión crítica sobre la IA como copiloto técnico guiado por el criterio del equipo.
+
+### 2. Actualización Integral del `README.md`
+- Redacción técnica completa con instrucciones reproducibles paso a paso para clonar y ejecutar el backend (`uvicorn`) y el frontend (`npm run dev`) en cualquier sistema operativo.
+- Documentación de los comandos para correr la suite de pruebas unitarias (`python3 backend/tests/test_backend.py`).
+- Esquema visual de la arquitectura del repositorio y explicación metodológica del problema.
+
+### 3. Validación Final End-to-End
+- Build de producción con Vite y TypeScript compilado con 0 advertencias y 0 errores.
+- Pruebas unitarias de backend con 100% de éxito (5/5 tests aprobados).

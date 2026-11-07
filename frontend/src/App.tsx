@@ -4,6 +4,7 @@ import { ControlPanel } from './components/ControlPanel';
 import { MetricsOverlay } from './components/MetricsOverlay';
 import { DeliveryTourPanel } from './components/DeliveryTourPanel';
 import { TourMetricsOverlay } from './components/TourMetricsOverlay';
+import { ModelInfoModal } from './components/ModelInfoModal';
 import { api } from './services/api';
 import {
   HealthResponse,
@@ -20,6 +21,7 @@ import {
   RefreshCw,
   Navigation,
   AlertTriangle,
+  Brain,
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -46,7 +48,8 @@ export const App: React.FC = () => {
     lon: -60.6698,
   }); // Terminal de Ómnibus
 
-  // Estado del cálculo de ruta Punto a Punto
+  // Estado del modal de información del modelo e IA
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
   const [routeError, setRouteError] = useState<string | null>(null);
@@ -248,8 +251,17 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        {/* Indicador de Estado del Backend */}
+        {/* Indicador de Estado del Backend y Botón de Auditoría */}
         <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm active:scale-95"
+            title="Ver métricas del modelo y reporte de IA"
+          >
+            <Brain className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Modelo & IA</span>
+          </button>
+
           {health?.status === 'online' ? (
             <div className="flex items-center space-x-2 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1.5 rounded-full">
               <span className="relative flex h-2.5 w-2.5">
@@ -371,6 +383,11 @@ export const App: React.FC = () => {
             </button>
           </div>
         )}
+        {/* Modal de Auditoría del Modelo ML y Documentación de IA */}
+        <ModelInfoModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </div>
     </div>
   );
