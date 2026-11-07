@@ -1,0 +1,34 @@
+{
+  "mae": 2.87,
+  "rmse": 7.5,
+  "r2": 0.9078,
+  "n_train": 40000,
+  "n_test": 10000,
+  "features": [
+    "length",
+    "hora_dia",
+    "dia_semana_jueves",
+    "dia_semana_lunes",
+    "dia_semana_martes",
+    "dia_semana_miércoles",
+    "dia_semana_sábado",
+    "dia_semana_viernes",
+    "clima_soleado",
+    "clima_tormenta",
+    "es_feriado_True"
+  ],
+  "feature_importances": {
+    "length": 0.8269,
+    "hora_dia": 0.0841,
+    "dia_semana_jueves": 0.0033,
+    "dia_semana_lunes": 0.0036,
+    "dia_semana_martes": 0.0059,
+    "dia_semana_miércoles": 0.0023,
+    "dia_semana_sábado": 0.0089,
+    "dia_semana_viernes": 0.0207,
+    "clima_soleado": 0.0122,
+    "clima_tormenta": 0.0242,
+    "es_feriado_True": 0.0078
+  },
+  "descripcion": "Modelo Random Forest Regressor entrenado con datos sintéticos urbanos de Rosario."
+}
