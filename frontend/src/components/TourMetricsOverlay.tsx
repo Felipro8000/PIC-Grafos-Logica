@@ -98,13 +98,13 @@ export const TourMetricsOverlay: React.FC<TourMetricsOverlayProps> = ({
                 className="flex items-center gap-2.5 bg-slate-950/50 border border-slate-800/80 px-3 py-2 rounded-xl text-xs"
               >
                 <span
-                  className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] shrink-0 ${
                     isDepot
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
                       : 'bg-purple-600/30 text-purple-300 border border-purple-500/40'
                   }`}
                 >
-                  {isDepot ? '★' : stop.orden}
+                  {isDepot ? 'Base' : stop.orden}
                 </span>
                 <div className="flex-1 overflow-hidden">
                   <div className="font-semibold text-slate-200 truncate">
@@ -115,8 +115,8 @@ export const TourMetricsOverlay: React.FC<TourMetricsOverlayProps> = ({
                   </div>
                 </div>
                 {isDepot && (
-                  <span className="text-[9px] uppercase tracking-wider bg-amber-950/60 text-amber-300 border border-amber-800 px-1.5 py-0.5 rounded">
-                    Depósito
+                  <span className="text-[9px] uppercase tracking-wider bg-amber-950/70 text-amber-300 border border-amber-700/60 px-2 py-0.5 rounded-md font-semibold">
+                    {idx === 0 ? 'Salida' : 'Retorno'}
                   </span>
                 )}
               </div>

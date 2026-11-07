@@ -294,14 +294,18 @@ class GraphService:
             total_time += time_s
             full_coords.extend(coords)
 
-        # Asignar orden de visita a cada parada de entrega
+        # Asignar orden de visita a cada parada de entrega (el depósito no se cuenta con número)
         ordered_stops: List[DeliveryWaypoint] = []
-        order_idx = 1
-        for pid in ordered_ids:
+        delivery_counter = 1
+        for idx, pid in enumerate(ordered_ids):
             p_obj = id_to_obj[pid].model_copy()
-            p_obj.orden = order_idx
+            is_depot_node = (pid == depot.id)
+            if is_depot_node:
+                p_obj.orden = None  # Depósito no lleva número de entrega
+            else:
+                p_obj.orden = delivery_counter
+                delivery_counter += 1
             ordered_stops.append(p_obj)
-            order_idx += 1
 
         return DeliveryTourResponse(
             ordered_stops=ordered_stops,

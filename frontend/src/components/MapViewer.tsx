@@ -176,8 +176,8 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           </Polyline>
         )}
 
-        {/* Marcador de Origen */}
-        {origin && (
+        {/* Marcador de Origen (solo visible en modo Punto a Punto) */}
+        {mode === 'route' && origin && (
           <Marker position={[origin.lat, origin.lon]} icon={originIcon}>
             <Popup>
               <div className="text-slate-800 text-xs">
@@ -188,8 +188,8 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           </Marker>
         )}
 
-        {/* Marcador de Destino */}
-        {destination && (
+        {/* Marcador de Destino (solo visible en modo Punto a Punto) */}
+        {mode === 'route' && destination && (
           <Marker position={[destination.lat, destination.lon]} icon={destIcon}>
             <Popup>
               <div className="text-slate-800 text-xs">

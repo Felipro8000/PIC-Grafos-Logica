@@ -112,6 +112,11 @@ def test_5_delivery_tour():
     assert len(res.ordered_stops) == 5  # depot + 3 stops + return to depot
     assert len(res.legs) == 4
     assert len(res.coordinates_full) > 0
+    # Verificar que el depósito inicial y final no tengan número
+    assert res.ordered_stops[0].orden is None
+    assert res.ordered_stops[-1].orden is None
+    # Verificar que las 3 paradas clientes comiencen desde 1
+    assert [s.orden for s in res.ordered_stops[1:4]] == [1, 2, 3]
     print("TEST 5 PASÓ EXITOSAMENTE.")
 
 if __name__ == "__main__":
