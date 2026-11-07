@@ -1,0 +1,22 @@
+# Entorno virtual y dependencias
+.venv/
+env/
+venv/
+node_modules/
+
+# Python cache y compilados
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos pesados descargados (se generan con scripts)
+# Si se desea versionar el grafo y modelo, descomentar:
+# backend/data/grafo_rosario.pkl
+# backend/data/dataset_viajes_ultima_milla.csv
+# backend/models/modelo_ultima_milla.pkl
+
+# Logs y builds
+*.log
+dist/
+.DS_Store
