@@ -230,3 +230,4 @@ export const MapViewer: React.FC<MapViewerProps> = ({
     </div>
   );
 };
+

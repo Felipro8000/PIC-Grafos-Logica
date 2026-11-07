@@ -93,3 +93,4 @@ export interface HealthResponse {
   edges_count: number;
   model_loaded: boolean;
 }
+
