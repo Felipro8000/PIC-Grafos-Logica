@@ -140,8 +140,8 @@ Simulador de Última Milla (Página Principal)
 - **Fase 1:** Definición y Aprobación de Arquitectura y Alcance (Completada).
 - **Fase 2:** Preparación del Grafo y API Backend (Completada y testeada).
 - **Fase 3:** Estructura del Frontend (Setup de React + Vite + TypeScript + Tailwind + Mapa Leaflet centrado en Rosario) (Completada y testeada).
-- **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas) (Próxima etapa).
-- **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend).
+- **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas) (Completada y testeada).
+- **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend) (Próxima etapa).
 - **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end.
 
 ---
@@ -222,3 +222,30 @@ La suite de pruebas automatizadas validó con éxito el 100% de los componentes:
 - **Selector de Modo:** Alternancia entre *Punto a Punto* y *Ronda de Entregas (TSP)*.
 - **Selectores de Presets:** Botones de acceso rápido para fijar lugares emblemáticos de Rosario (Monumento, Terminal, Pellegrini, Pichincha, etc.) sin tipear coordenadas manuales.
 - **Validación del Build:** `npm run build` ejecutado con éxito sin errores de compilación ni advertencias de tipos.
+
+---
+
+## 12. Implementación y Resultados de la Fase 4 (Integración de Ruteo Punto a Punto)
+
+### 1. Componente de Panel de Control (`src/components/ControlPanel.tsx`)
+- **Configuración de Origen y Destino:** Permite seleccionar puntos emblemáticos de Rosario mediante selectores o marcando con clic directo en el mapa. Muestra coordenadas en tiempo real y botón para limpiar selección.
+- **Parámetros de Contexto:**
+  - Slider interactivo para **Hora del día** (0 a 23 h) con indicador de alerta de horario pico en días hábiles (07–09 h y 17–19 h).
+  - Selector de **Día de la semana** (Lunes a Domingo).
+  - Botones con iconos para condición de **Clima** (Soleado ☀️, Lluvia 🌧️, Tormenta ⛈️).
+  - Switch para indicar si es día feriado.
+- **Acción:** Botón "Calcular Rutas y Comparar" con estados visuales de carga interactiva y feedback deshabilitado si faltan coordenadas.
+
+### 2. Componente de Métricas y Comparativa (`src/components/MetricsOverlay.tsx`)
+- **Veredicto del Algoritmo:** Destaca el tiempo ganado en minutos y porcentaje de optimización cuando la ruta dinámica encuentra un camino más ágil.
+- **Tarjetas Comparativas:**
+  - *Ruta Dinámica (ML + Dijkstra):* Tiempo predicho en minutos, distancia en km y cantidad de tramos viales.
+  - *Ruta Estática (Distancia mínima):* Tiempo nominal y distancia más corta geográfica.
+- **Análisis Cualitativo e Insights:** Tarjetas con explicaciones generadas por el backend (evitación de congestión en horas pico, desvío por anegamiento de arterias en tormentas).
+- **Leyenda Cartográfica:** Indicación visual de los colores de las polilíneas (Verde = Dinámica, Azul punteado = Estática).
+
+### 3. Integración en `App.tsx` y Validación End-to-End
+- Conexión del flujo completo con `POST /api/route`.
+- Renderizado simultáneo en Leaflet de ambas rutas con encuadre automático (`fitBounds`).
+- Manejo de excepciones y banners de alerta en caso de desconexión o puntos no transitables.
+- Validación con `npm run build` aprobada con 0 errores TypeScript.
