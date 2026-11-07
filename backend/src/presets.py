@@ -66,3 +66,4 @@ PRESET_LOCATIONS: List[Dict] = [
         "categoria": "entrega"
     }
 ]
+

@@ -80,3 +80,4 @@ class ModelMetricsResponse(BaseModel):
     features: List[str]
     feature_importances: Dict[str, float]
     descripcion: str
+

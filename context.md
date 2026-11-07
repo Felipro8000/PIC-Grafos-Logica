@@ -146,18 +146,49 @@ Simulador de Última Milla (Página Principal)
 
 ---
 
-## 10. Bitácora de Avance - Fase 2 (Backend Core)
-- **Grafo vial de Rosario:** Descargado con OSMnx (13.190 nodos, 30.166 aristas) y guardado en `backend/data/grafo_rosario.pkl`. Indexación espacial ultra-rápida construida con `scipy.spatial.cKDTree`.
-- **Dataset sintético:** 50.000 viajes simulados con reglas urbanas guardados en `backend/data/dataset_viajes_ultima_milla.csv`.
-- **Modelo de Machine Learning:** Random Forest Regressor entrenado y guardado en `backend/models/modelo_ultima_milla.pkl`. Métricas obtenidas en conjunto de test (10.000 muestras):
-  - $R^2$: `0.9078`
-  - MAE: `2.87` segundos
-  - RMSE: `7.50` segundos
-- **Servicios y API REST:**
-  - `backend/src/schemas.py`: Modelos Pydantic para validación estricta de coordenadas, contexto, piernas de viaje y respuestas.
-  - `backend/src/presets.py`: 8 puntos de interés de Rosario pre-cargados.
-  - `backend/src/ml_service.py`: Inferencia vectorizada batch en Pandas/NumPy (< 50 ms para todas las aristas).
-  - `backend/src/graph_service.py`: Cálculo de Dijkstra estático vs dinámico con métricas e insights, y algoritmo heurístico TSP (Nearest Neighbor) para la ronda de entregas.
-  - `backend/src/main.py`: Endpoints FastAPI (`/api/health`, `/api/presets`, `/api/model/metrics`, `/api/route`, `/api/delivery-tour`) con CORS habilitado.
-- **Suite de Pruebas:** `backend/tests/test_backend.py` ejecutado con éxito total (5/5 tests aprobados).
+## 10. Implementación y Resultados de la Fase 2 (Backend Core)
+
+### 2. Grafo Vial de Rosario
+- **Descarga y Extracción:** Se descargó la red vial completa de Rosario para conducción vehicular (`network_type="drive"`) utilizando OSMnx y OpenStreetMap.
+- **Topología:** El grafo cuenta con **13.190 nodos** (intersecciones) y **30.166 aristas** (tramos de calles con sentido de circulación y longitud en metros).
+- **Persistencia:** Guardado y serializado en `backend/data/grafo_rosario.pkl`, permitiendo que la API arranque en memoria en menos de 0.05 segundos sin consultar internet.
+- **Indexación Espacial:** Se construyó un árbol `scipy.spatial.cKDTree` sobre las coordenadas geográficas `[lat, lon]` de todos los nodos. Esto permite resolver búsquedas del nodo más cercano a cualquier punto de la ciudad en **microsegundos**.
+
+### 3. Generación de Datos Sintéticos y Entrenamiento de Machine Learning
+- **Dataset Histórico Sintético:** Generado en `backend/data/dataset_viajes_ultima_milla.csv` con **50.000 viajes simulados**. Modela el comportamiento real de Rosario mediante reglas urbanas explícitas:
+  - Congestión en horas pico (07:00–09:00 h y 17:00–19:00 h en días hábiles con factor 0.55 de velocidad).
+  - Efecto climático adverso (lluvia general factor 0.85, tormenta 0.65).
+  - Anegamiento severo localizado en arterias críticas (Av. Pellegrini con lluvia o tormenta reducida al factor 0.50).
+  - Jerarquía vial (vías primarias y troncales más rápidas; calles residenciales y pasajes más lentos).
+- **Modelo Entrenado:** `RandomForestRegressor` (60 estimadores, profundidad máxima 16) guardado en `backend/models/modelo_ultima_milla.pkl`.
+- **Métricas de Evaluación (sobre 10.000 muestras de test):**
+  - **$R^2$ (Coeficiente de Determinación):** `0.9078` (explica más del 90% de la varianza temporal).
+  - **MAE (Error Absoluto Medio):** `2.87` segundos.
+  - **RMSE (Raíz del Error Cuadrático Medio):** `7.50` segundos.
+- **Métricas e Importancias:** Guardadas en `backend/models/metricas_modelo.json` para consumo directo de la API y transparencia académica.
+
+### 4. Servicios y Algoritmos de Grafos
+- **Inferencia Vectorizada (`backend/src/ml_service.py`):**
+  - Implementa predicción batch sobre matrices de NumPy/Pandas.
+  - Predice el tiempo estimado de las 30.166 aristas simultáneamente en **menos de 50 milisegundos**.
+- **Servicio de Grafos (`backend/src/graph_service.py`):**
+  - **Ruta Estática:** Aplica Dijkstra sobre el peso estático `weight_distance` (longitud física en metros).
+  - **Ruta Dinámica:** Actualiza `weight_dynamic` con las predicciones del modelo ML según hora, día, clima y feriado, y ejecuta Dijkstra para hallar el trayecto temporalmente óptimo.
+  - **Ronda de Entregas (TSP Multi-parada):** Resuelve el problema del repartidor para $N$ paradas calculando la matriz de costos dinámicos entre clientes y aplicando la heurística de Vecino Más Cercano (*Nearest Neighbor*), retornando el itinerario ordenado y las piernas de viaje.
+  - **Generación de Insights:** Explica automáticamente al usuario por qué la ruta dinámica difiere de la estática (ej. arterias congestionadas evitadas, riesgo de anegamiento).
+- **Presets de Rosario (`backend/src/presets.py`):** 8 ubicaciones predefinidas (Centro de Distribución, Monumento a la Bandera, Terminal de Ómnibus, Pellegrini y Corrientes, Parque Independencia, Pichincha, etc.) para pruebas ágiles.
+- **API REST (`backend/src/main.py`):** Desarrollada con FastAPI y Pydantic (`backend/src/schemas.py`), con CORS habilitado y endpoints:
+  - `GET /api/health`: Estado de salud, conteo de nodos y aristas.
+  - `GET /api/presets`: Puntos de interés de Rosario.
+  - `GET /api/model/metrics`: Métricas $R^2$, MAE, RMSE y feature importances.
+  - `POST /api/route`: Cálculo y comparativa de ruta estática vs dinámica.
+  - `POST /api/delivery-tour`: Optimización de ronda de entregas paso a paso.
+
+### 5. Resultados de las Pruebas Unitarias (`backend/tests/test_backend.py`)
+La suite de pruebas automatizadas validó con éxito el 100% de los componentes:
+- **Test 1 (Carga del Grafo):** Grafo verificado en memoria en `0.0519 s` con 13.190 nodos y 30.166 aristas.
+- **Test 2 (Comportamiento del Modelo ML):** Tiempo promedio por tramo en condición base (Lunes 14:00 h, Soleado) = `13.29 s` frente a condición extrema (Viernes 18:00 h, Tormenta) = `30.43 s`. El modelo incrementa el tiempo de viaje más del 120% ante congestión y temporal.
+- **Test 3 (Health y Presets):** Endpoints HTTP respondieron código 200 con estructura esperada.
+- **Test 4 (Ruta Punto a Punto):** Entre Monumento a la Bandera y Terminal, la ruta estática arrojó 4.46 km y 21.4 min; la dinámica seleccionó un camino de 4.52 km y 20.9 min, evitando zonas anegadas y ahorrando tiempo.
+- **Test 5 (Ronda de Entregas TSP):** Calculó el orden de visita secuencial (Depósito $\to$ Pichincha $\to$ Pellegrini $\to$ Monumento $\to$ Depósito) cubriendo 13.8 km en 43.7 min.
 

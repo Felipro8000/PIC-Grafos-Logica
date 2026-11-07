@@ -316,3 +316,4 @@ class GraphService:
 
 # Instancia singleton
 graph_service = GraphService()
+

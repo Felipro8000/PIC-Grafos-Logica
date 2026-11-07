@@ -94,3 +94,4 @@ class MLService:
 
 # Instancia singleton
 ml_service = MLService()
+
