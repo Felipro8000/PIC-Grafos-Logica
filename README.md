@@ -1,8 +1,6 @@
 # Ruteo de Última Milla con Predicción de Demanda
 
-**Trabajo Práctico Integrador** — *Lógica y Teoría de Grafos*  
-**Autora:** Sofia Koprcina ("Grupo Alumnos")  
-**Ciudad de estudio:** Rosario, Santa Fe, Argentina  
+Felipe Isern y Sofia Koprcina  
 
 ---
 
@@ -59,23 +57,8 @@ npm run dev
 
 ---
 
-## 🧪 Ejecución de la Suite de Pruebas Automatizadas
-Para verificar el 100% del funcionamiento de la lógica de grafos, modelo y endpoints:
-```bash
-source .venv/bin/activate
-python3 backend/tests/test_backend.py
-```
-**Tests verificados:**
-* ✅ Carga topológica del grafo (13.190 nodos, 30.166 aristas) y cKDTree.
-* ✅ Inferencia vectorizada con penalización de tráfico y clima adverso.
-* ✅ Endpoints `/api/health` y `/api/presets`.
-* ✅ Cálculo de ruta Punto a Punto (Dijkstra estático vs dinámico).
-* ✅ Cálculo de Ronda de Entregas TSP con retorno a base.
-
----
-
 ## 📊 Arquitectura del Sistema
-```text
+
 PIC-Grafos-Logica-main/
 ├── backend/
 │   ├── data/
