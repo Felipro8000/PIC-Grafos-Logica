@@ -2,6 +2,8 @@
 
 Felipe Isern y Sofia Koprcina  
 
+IMPORTANTE: "Grupo Alumnos" es Sofía Koprcina. Linux me odia y el sentimiento es mutuo, pero soy yo quien commitea. 
+
 ---
 
 ## 📌 Descripción del Proyecto
