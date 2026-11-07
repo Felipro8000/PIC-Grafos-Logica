@@ -139,8 +139,8 @@ Simulador de Última Milla (Página Principal)
 ## 9. Fases de Implementación Propuestas
 - **Fase 1:** Definición y Aprobación de Arquitectura y Alcance (Completada).
 - **Fase 2:** Preparación del Grafo y API Backend (Completada y testeada).
-- **Fase 3:** Estructura del Frontend (Setup de React + Vite + TypeScript + Tailwind + Mapa Leaflet centrado en Rosario) (Próxima etapa).
-- **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas).
+- **Fase 3:** Estructura del Frontend (Setup de React + Vite + TypeScript + Tailwind + Mapa Leaflet centrado en Rosario) (Completada y testeada).
+- **Fase 4:** Integración de Ruteo Punto a Punto (Controles de contexto, llamada a API, renderizado comparativo de rutas y métricas) (Próxima etapa).
 - **Fase 5:** Implementación de la Ronda de Entregas (Marcación multi-punto, TSP en backend, pines ordenados en frontend).
 - **Fase 6:** Panel de Métricas de ML, sección de Documentación de IA y pruebas end-to-end.
 
@@ -192,3 +192,33 @@ La suite de pruebas automatizadas validó con éxito el 100% de los componentes:
 - **Test 4 (Ruta Punto a Punto):** Entre Monumento a la Bandera y Terminal, la ruta estática arrojó 4.46 km y 21.4 min; la dinámica seleccionó un camino de 4.52 km y 20.9 min, evitando zonas anegadas y ahorrando tiempo.
 - **Test 5 (Ronda de Entregas TSP):** Calculó el orden de visita secuencial (Depósito $\to$ Pichincha $\to$ Pellegrini $\to$ Monumento $\to$ Depósito) cubriendo 13.8 km en 43.7 min.
 
+
+---
+
+## 11. Implementación y Resultados de la Fase 3 (Frontend Base)
+
+### 1. Inicialización y Herramientas del Frontend
+- **Stack:** React 18, TypeScript estricto, Vite y Tailwind CSS.
+- **Configuración de Proxy Local (`vite.config.ts`):** Redirección transparente de `/api/*` hacia `http://localhost:8000`, permitiendo desarrollo local sin problemas de CORS.
+- **Tipado Estricto (`src/types/index.ts`):** Modelos TypeScript que replican al 100% los contratos Pydantic del backend (`Coordinate`, `ContextParams`, `RouteResponse`, `DeliveryTourResponse`, `ModelMetricsResponse`).
+- **Cliente HTTP (`src/services/api.ts`):** Métodos asíncronos desacoplados (`getHealth`, `getPresets`, `getModelMetrics`, `calculateRoute`, `calculateDeliveryTour`).
+
+### 2. Componente de Mapa Cartográfico (`src/components/MapViewer.tsx`)
+- **Librería:** Leaflet + React-Leaflet con mosaicos abiertos de OpenStreetMap.
+- **Enfoque Rosario:** Centrado geográfico en `[-32.952, -60.655]` con zoom interactivo y paneo.
+- **Marcadores Personalizados con CSS:** Se implementaron pines generados dinámicamente mediante `L.divIcon`, evitando problemas de rutas relativas de imágenes. Se diferencian visualmente:
+  - *Origen:* Pin verde con etiqueta "O".
+  - *Destino:* Pin rojo con etiqueta "D".
+  - *Depósito:* Pin ámbar con icono representativo.
+  - *Paradas de Entrega:* Pines púrpuras con número secuencial de visita.
+- **Trazado de Polilíneas:**
+  - *Ruta Estática:* Línea azul punteada.
+  - *Ruta Dinámica:* Línea verde esmeralda continua (6px).
+  - *Ronda de Entregas:* Línea púrpura continua (5px).
+- **Auto-fit Geográfico:** El mapa auto-ajusta sus límites (`fitBounds`) al trazar una nueva ruta para mantenerla siempre encuadrada.
+
+### 3. Interfaz Principal (`src/App.tsx`)
+- **Header Operativo:** Indicador en tiempo real del estado de conexión con el backend (muestra cantidad de nodos activos y alerta visual ante desconexión).
+- **Selector de Modo:** Alternancia entre *Punto a Punto* y *Ronda de Entregas (TSP)*.
+- **Selectores de Presets:** Botones de acceso rápido para fijar lugares emblemáticos de Rosario (Monumento, Terminal, Pellegrini, Pichincha, etc.) sin tipear coordenadas manuales.
+- **Validación del Build:** `npm run build` ejecutado con éxito sin errores de compilación ni advertencias de tipos.
