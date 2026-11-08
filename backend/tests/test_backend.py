@@ -117,6 +117,13 @@ def test_5_delivery_tour():
     assert res.ordered_stops[-1].orden is None
     # Verificar que las 3 paradas clientes comiencen desde 1
     assert [s.orden for s in res.ordered_stops[1:4]] == [1, 2, 3]
+    assert [s.id for s in res.ordered_stops] == [
+        "deposito",
+        "stop1",
+        "stop2",
+        "stop3",
+        "deposito"
+    ]
     print("TEST 5 PASÓ EXITOSAMENTE.")
 
 if __name__ == "__main__":

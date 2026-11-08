@@ -157,7 +157,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
           </Polyline>
         )}
 
-        {/* 3. Trazado de Ronda de Entregas TSP (Púrpura / Índigo) */}
+        {/* 3. Trazado de Ronda de Entregas con Dijkstra (Púrpura / Índigo) */}
         {mode === 'tour' && tourCoords.length > 0 && (
           <Polyline
             positions={tourCoords}
@@ -170,7 +170,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
             <Popup>
               <div className="text-slate-800 text-xs">
                 <strong className="text-purple-700">Circuito de Entregas Optimizado</strong>
-                <p>Itinerario óptimo calculado mediante heurística TSP sobre pesos dinámicos.</p>
+                <p>Itinerario calculado con Dijkstra sobre pesos dinámicos.</p>
               </div>
             </Popup>
           </Polyline>
@@ -203,10 +203,17 @@ export const MapViewer: React.FC<MapViewerProps> = ({
         {/* Marcadores de la Ronda de Entregas con número secuencial */}
         {mode === 'tour' &&
           stops.map((stop, idx) => {
-            const isDepot = idx === 0 || stop.id === 'deposito';
+            const isDepot = idx === 0 || stop.id === stops[0]?.id;
+            const isReturnDepot = idx > 0 && idx === stops.length - 1 && stop.id === stops[0]?.id;
+
+            // La salida y el retorno usan el mismo nodo físico. Se muestra un único
+            // marcador de depósito y no se asigna un número al retorno.
+            if (isReturnDepot) {
+              return null;
+            }
             const icon = isDepot
               ? depotIcon
-              : createCustomIcon('#8b5cf6', String(stop.orden || idx + 1), 32);
+              : createCustomIcon('#8b5cf6', String(stop.orden ?? idx + 1), 32);
 
             return (
               <Marker
@@ -217,7 +224,7 @@ export const MapViewer: React.FC<MapViewerProps> = ({
                 <Popup>
                   <div className="text-slate-800 text-xs">
                     <strong className="text-purple-700">
-                      {isDepot ? 'Depósito Central' : `Parada #${stop.orden || idx + 1}`}
+                      {isDepot ? 'Depósito Central' : `Parada #${stop.orden ?? idx + 1}`}
                     </strong>
                     <p className="font-medium">{stop.nombre}</p>
                     <p>Lat: {stop.lat.toFixed(4)}, Lon: {stop.lon.toFixed(4)}</p>
@@ -230,4 +237,3 @@ export const MapViewer: React.FC<MapViewerProps> = ({
     </div>
   );
 };
-

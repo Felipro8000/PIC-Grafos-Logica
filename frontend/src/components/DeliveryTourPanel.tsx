@@ -62,7 +62,7 @@ export const DeliveryTourPanel: React.FC<DeliveryTourPanelProps> = ({
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-wide">
-              Ronda de Entregas (TSP)
+              Ronda de Entregas
             </h2>
             <p className="text-[11px] text-slate-400">Optimización Multi-Parada</p>
           </div>
@@ -264,7 +264,7 @@ export const DeliveryTourPanel: React.FC<DeliveryTourPanelProps> = ({
         </div>
       </div>
 
-      {/* 4. Botón de Ejecución de Ronda TSP */}
+      {/* 4. Botón de Ejecución de Ronda con Dijkstra */}
       <button
         type="button"
         disabled={stops.length === 0 || loading}
@@ -278,7 +278,7 @@ export const DeliveryTourPanel: React.FC<DeliveryTourPanelProps> = ({
         {loading ? (
           <>
             <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span>Optimizando Circuito TSP...</span>
+            <span>Calculando circuito con Dijkstra...</span>
           </>
         ) : (
           <>

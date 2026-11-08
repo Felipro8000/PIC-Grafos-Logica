@@ -236,7 +236,7 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
                       <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
                         <li>Elección del problema y modelado matemático del grafo.</li>
                         <li>Definición de las métricas de validación (R², MAE, RMSE).</li>
-                        <li>Diseño de la heurística de Vecino Más Cercano para TSP.</li>
+                        <li>Diseño de la lógica del recorrido multi-parada con Dijkstra.</li>
                         <li>Validación lógica de que el depósito sea nodo base y no parada numerada.</li>
                       </ul>
                     </div>
@@ -282,7 +282,7 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
                     5. Reflexión Breve del Grupo
                   </h4>
                   <p className="text-slate-300 text-[11px]">
-                    La IA aceleró fuertemente la escritura de código repetitivo (maquetado CSS, llamadas asíncronas y formateo de datos). Sin embargo, sin un entendimiento claro de Teoría de Grafos, proyecciones geográficas y formulación de problemas (Dijkstra vs. TSP), el sistema hubiera contenido inconsistencias lógicas. La IA funcionó como un copiloto técnico guiado por el criterio del equipo.
+                    La IA aceleró fuertemente la escritura de código repetitivo (maquetado CSS, llamadas asíncronas y formateo de datos). Sin embargo, sin un entendimiento claro de Teoría de Grafos, proyecciones geográficas y formulación de problemas con Dijkstra, el sistema hubiera contenido inconsistencias lógicas. La IA funcionó como un copiloto técnico guiado por el criterio del equipo.
                   </p>
                 </div>
               </div>

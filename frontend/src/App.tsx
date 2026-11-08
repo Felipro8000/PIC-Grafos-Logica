@@ -54,7 +54,7 @@ export const App: React.FC = () => {
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
   const [routeError, setRouteError] = useState<string | null>(null);
 
-  // Estado del modo Ronda de Entregas (TSP)
+  // Estado del modo Ronda de Entregas con Dijkstra
   const [depot, setDepot] = useState<DeliveryWaypoint>({
     id: 'centro_distribucion',
     nombre: 'Centro de Distribución (Depósito Norte)',
@@ -212,7 +212,7 @@ export const App: React.FC = () => {
               </span>
             </h1>
             <p className="text-xs text-slate-400">
-              Predicción de Demanda & Algoritmos de Grafos (Dijkstra + TSP)
+              Predicción de Demanda & Algoritmos de Grafos (Dijkstra)
             </p>
           </div>
         </div>
@@ -247,7 +247,7 @@ export const App: React.FC = () => {
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Ronda de Entregas (TSP)</span>
+            <span>Ronda de Entregas</span>
           </button>
         </div>
 
@@ -320,7 +320,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Panel Izquierdo: Modo Ronda de Entregas (TSP) */}
+        {/* Panel Izquierdo: Modo Ronda de Entregas con Dijkstra */}
         {mode === 'tour' && (
           <div className="absolute top-4 left-4 z-20">
             <DeliveryTourPanel
@@ -360,7 +360,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Panel Derecho: Métricas de Ronda TSP */}
+        {/* Panel Derecho: Métricas de Ronda con Dijkstra */}
         {mode === 'tour' && tourResult && (
           <div className="absolute top-4 right-4 z-20">
             <TourMetricsOverlay

@@ -2,7 +2,7 @@ import os
 import joblib
 import numpy as np
 import networkx as nx
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Optional
 from scipy.spatial import cKDTree
 
 from .schemas import (
@@ -223,8 +223,9 @@ class GraphService:
 
     def compute_delivery_tour(self, depot: DeliveryWaypoint, stops: List[DeliveryWaypoint], context: ContextParams, return_to_depot: bool = True) -> DeliveryTourResponse:
         """
-        Calcula la Ronda de Entregas óptima para múltiples paradas usando una
-        heurística de Vecino Más Cercano (TSP) sobre Dijkstra con pesos dinámicos de ML.
+        Calcula una ronda de entregas recorriendo las paradas en el orden
+        proporcionado. Cada tramo se resuelve exclusivamente con Dijkstra
+        sobre pesos dinámicos predichos por ML.
         """
         if self.G is None:
             self._load_graph()
@@ -235,34 +236,9 @@ class GraphService:
         all_points = [depot] + stops
         node_map = {p.id: self.get_nearest_node(p.lat, p.lon) for p in all_points}
 
-        # Matriz de tiempos calculada con Dijkstra sobre pesos dinámicos
-        point_ids = [p.id for p in all_points]
-        n_points = len(point_ids)
-        cost_matrix: Dict[Tuple[str, str], Tuple[float, float, List[int]]] = {}
-
-        for p1 in point_ids:
-            for p2 in point_ids:
-                if p1 == p2:
-                    continue
-                u = node_map[p1]
-                v = node_map[p2]
-                try:
-                    nodes = nx.dijkstra_path(self.G, source=u, target=v, weight='weight_dynamic')
-                    coords, dist, time_s = self._extract_path_details(nodes, 'weight_dynamic')
-                    cost_matrix[(p1, p2)] = (time_s, dist, nodes)
-                except nx.NetworkXNoPath:
-                    cost_matrix[(p1, p2)] = (999999.0, 999999.0, [])
-
-        # Heurística TSP de Vecino Más Cercano (Nearest Neighbor)
-        unvisited = [s.id for s in stops]
-        current_id = depot.id
-        ordered_ids = [current_id]
-
-        while unvisited:
-            next_id = min(unvisited, key=lambda target: cost_matrix.get((current_id, target), (float('inf'),))[0])
-            unvisited.remove(next_id)
-            ordered_ids.append(next_id)
-            current_id = next_id
+        # No se aplica ninguna heurística de ordenamiento (como Vecino Más Cercano).
+        # Las paradas conservan el orden recibido por el usuario.
+        ordered_ids = [depot.id] + [stop.id for stop in stops]
 
         if return_to_depot and len(stops) > 0:
             ordered_ids.append(depot.id)
@@ -278,8 +254,20 @@ class GraphService:
         for i in range(len(ordered_ids) - 1):
             src_id = ordered_ids[i]
             dst_id = ordered_ids[i + 1]
-            time_s, dist_m, nodes = cost_matrix.get((src_id, dst_id), (0.0, 0.0, []))
-            coords, _, _ = self._extract_path_details(nodes, 'weight_dynamic')
+            try:
+                nodes = nx.dijkstra_path(
+                    self.G,
+                    source=node_map[src_id],
+                    target=node_map[dst_id],
+                    weight='weight_dynamic'
+                )
+            except nx.NetworkXNoPath as exc:
+                raise ValueError(
+                    f"No existe un camino conectando '{id_to_obj[src_id].nombre}' "
+                    f"con '{id_to_obj[dst_id].nombre}'."
+                ) from exc
+
+            coords, dist_m, time_s = self._extract_path_details(nodes, 'weight_dynamic')
 
             legs.append(DeliveryTourLeg(
                 from_id=src_id,
@@ -320,4 +308,3 @@ class GraphService:
 
 # Instancia singleton
 graph_service = GraphService()
-

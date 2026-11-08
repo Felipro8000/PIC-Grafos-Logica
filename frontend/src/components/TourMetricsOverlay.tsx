@@ -36,7 +36,7 @@ export const TourMetricsOverlay: React.FC<TourMetricsOverlayProps> = ({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white tracking-wide">
-              Itinerario Optimizado (TSP)
+              Itinerario Calculado con Dijkstra
             </h3>
             <p className="text-[11px] text-slate-400">
               {context_applied.dia_semana.toUpperCase()} {context_applied.hora_dia}:00 h · {context_applied.clima}
@@ -82,10 +82,10 @@ export const TourMetricsOverlay: React.FC<TourMetricsOverlayProps> = ({
         <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
           <span className="flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 text-purple-400" />
-            Orden de Visita Óptimo
+            Orden de Visita
           </span>
           <span className="text-[10px] text-purple-300 font-normal">
-            Vecino Más Cercano
+            Sin heurística de orden
           </span>
         </span>
 

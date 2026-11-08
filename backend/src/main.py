@@ -14,7 +14,7 @@ from .graph_service import graph_service
 
 app = FastAPI(
     title="API de Ruteo de Última Milla",
-    description="API para optimización de logística urbana en Rosario integrando Machine Learning y Algoritmos de Grafos (Dijkstra y TSP).",
+    description="API para ruteo de logística urbana en Rosario integrando Machine Learning y Dijkstra.",
     version="1.0.0"
 )
 
@@ -72,8 +72,8 @@ def calculate_route(request: RouteRequest):
 @app.post("/api/delivery-tour", response_model=DeliveryTourResponse, summary="Calcular ronda de entregas (multi-parada)")
 def calculate_delivery_tour(request: DeliveryTourRequest):
     """
-    Resuelve el problema de la ronda de entregas (TSP) ordenando los puntos de parada
-    mediante pesos dinámicos de tiempo y retornando la secuencia óptima paso a paso.
+    Construye una ronda conservando el orden de las paradas y calculando
+    cada tramo con Dijkstra sobre pesos dinámicos de tiempo.
     """
     try:
         if not request.stops:
@@ -92,4 +92,3 @@ def calculate_delivery_tour(request: DeliveryTourRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.src.main:app", host="0.0.0.0", port=8000, reload=True)
-
