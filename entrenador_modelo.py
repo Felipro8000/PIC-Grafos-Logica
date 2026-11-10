@@ -14,7 +14,7 @@ df_historico = pd.read_csv("dataset_viajes_ultima_milla.csv")
 df_ml = pd.get_dummies(df_historico, columns=['dia_semana', 'clima', 'es_feriado'], drop_first=True)
 
 #Ahora 'length' forma parte de las variables de entrada (X) ---
-X = df_ml.drop(columns=['tramo_id', 'tiempo_real_viaje', 'velocidad_promedio_historica'])
+X = df_ml.drop(columns=['tramo_id', 'tiempo_real_viaje', 'velocidad_promedio_historica','clima','hora_dia','dia_semana','es_feriado'])
 y = df_ml['tiempo_real_viaje']
 
 # Dividir en entrenamiento (80%) y test (20%)
